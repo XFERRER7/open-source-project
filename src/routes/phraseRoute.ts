@@ -15,11 +15,11 @@ export async function phraseRoute(app: FastifyInstance) {
 
   app.get('/phrase/get-by-category/:id', async (request, reply) => {
 
-   const paramsSchema = z.object({
+    const paramsSchema = z.object({
       id: z.string().uuid()
-   })
+    })
 
-   const params = paramsSchema.parse(request.params)
+    const params = paramsSchema.parse(request.params)
 
     const phrases = await client.phrase.findMany({
       where: {
@@ -60,20 +60,54 @@ export async function phraseRoute(app: FastifyInstance) {
   })
 
   app.delete('/phrase/delete/:id', async (request, reply) => {
-      
-      const paramsSchema = z.object({
-        id: z.string().uuid()
-      })
-  
-      const params = paramsSchema.parse(request.params)
-  
-      const phrase = await client.phrase.delete({
-        where: {
-          id: params.id
-        }
-      })
-  
-      return phrase
-  
+
+    const paramsSchema = z.object({
+      id: z.string().uuid()
+    })
+
+    const params = paramsSchema.parse(request.params)
+
+    const phrase = await client.phrase.delete({
+      where: {
+        id: params.id
+      }
+    })
+
+    return phrase
+
   })
+
+  app.put('/phrase/update/:id', async (request, reply) => {
+
+    const paramsSchema = z.object({
+      id: z.string().uuid()
+    })
+
+
+    const bodySchema = z.object({
+     status: z.custom((value) => {
+        if (value === "approved" || value === "pending") {
+          return value;
+        } else {
+          throw new Error("The field status must be approved or pending");
+        }
+     }) 
+    })
+
+    const params = paramsSchema.parse(request.params)
+    const body = bodySchema.parse(request.body)
+
+    const phrase = await client.phrase.update({
+      where: {
+        id: params.id
+      },
+      data: {
+        status: body.status
+      }
+    })
+
+    return phrase
+
+  })
+
 }
