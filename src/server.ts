@@ -13,7 +13,7 @@ app.register(phraseRoute)
 
 app.listen({
   host: '0.0.0.0',
-  port: process.env.PORT ? Number(process.env.PORT) : 3333,
+  port: process.env.PORT ? Number(process.env.PORT) : 5000,
 }).then(() => {
-  console.log('🚀 HTTP server running on port http://localhost:3333')
+  console.log(`🚀 HTTP server running on port ${process.env.PORT ? Number(process.env.PORT) : 5000}`)
 })
