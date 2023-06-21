@@ -31,6 +31,31 @@ export async function phraseRoute(app: FastifyInstance) {
 
   })
 
+  app.get('/phrase/get-by-status/:status', async (request) => {
+
+    const paramsSchema = z.object({
+      status: z.custom((value) => {
+        if (value === "approved" || value === "pending") {
+          return value;
+        } else {
+          throw new Error("The field status must be approved or pending");
+        }
+      })
+    })
+
+    const params = paramsSchema.parse(request.params)
+
+    const phrases = await client.phrase.findMany({
+      where: {
+        status: params.status
+      }
+    })
+
+    return phrases
+
+
+  })
+
   app.post('/phrase/create', async (request, reply) => {
 
     const bodySchema = z.object({
